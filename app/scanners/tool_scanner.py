@@ -1,5 +1,7 @@
 from app.models import ToolDefinition, Finding
 from app.scanners.rule_scanner import scan_text
+from app.scanners.permission_scanner import scan_permissions
+from app.scanners.permission_analyzer import analyze_permissions
 
 
 def scan_tool(tool: ToolDefinition) -> list[Finding]:
@@ -9,9 +11,18 @@ def scan_tool(tool: ToolDefinition) -> list[Finding]:
         f"{' '.join(tool.permissions)}"
     )
 
-    raw_findings = scan_text(text_to_scan)
+    text_findings = scan_text(text_to_scan)
+
+    permission_findings = scan_permissions(
+        tool.permissions
+    )
+
+    permission_analysis_findings = analyze_permissions(
+        tool.description,
+        tool.permissions,
+    )
 
     return [
         Finding(**finding)
-        for finding in raw_findings
-    ]
+        for finding in text_findings
+    ] + permission_findings + permission_analysis_findings

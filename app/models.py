@@ -14,7 +14,7 @@ class Finding(BaseModel):
     description: str
     recommendation: str
     severity: str
-    points: int
+    points: int 
 
 
 class ScanResult(BaseModel):
