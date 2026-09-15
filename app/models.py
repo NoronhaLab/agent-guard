@@ -8,8 +8,11 @@ class ToolDefinition(BaseModel):
 
 
 class Finding(BaseModel):
-    keyword: str
-    message: str
+    id: str
+    category: str
+    title: str
+    description: str
+    recommendation: str
     severity: str
     points: int
 
