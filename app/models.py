@@ -1,5 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
-class ScanRequest(BaseModel):
-    text: str
+class ToolDefinition(BaseModel):
+    name: str
+    description: str
+    permissions: list[str] = Field(default_factory=list)

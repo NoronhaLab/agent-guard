@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
-from app.models import ScanRequest
-from app.scanners.rule_scanner import scan_text
+from app.models import ToolDefinition
+from app.scanners.tool_scanner import scan_tool
 
 
 app = FastAPI(
@@ -21,11 +21,11 @@ def health_check():
 
 
 @app.post("/scan")
-def scan(request: ScanRequest):
-    findings = scan_text(request.text)
+def scan(tool: ToolDefinition):
+    findings = scan_tool(tool)
 
     return {
-        "text": request.text,
+        "tool": tool,
         "findings": findings,
         "total_findings": len(findings)
     }
