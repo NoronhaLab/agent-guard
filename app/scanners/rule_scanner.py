@@ -1,27 +1,66 @@
 DANGEROUS_KEYWORDS = {
-    "delete": "Operação destrutiva detectada.",
-    "remove": "Operação destrutiva detectada.",
-    "execute": "Capacidade de execução detectada.",
-    "shell": "Acesso ao shell detectado.",
-    "admin": "Capacidade administrativa detectada.",
-    "password": "Possível manipulação de credenciais detectada.",
-    "token": "Possível manipulação de tokens detectada.",
-    "secret": "Possível manipulação de segredos detectada.",
-    "payment": "Operação financeira detectada.",
+    "delete": {
+        "message": "Operação destrutiva detectada.",
+        "severity": "HIGH",
+        "points": 30,
+    },
+    "remove": {
+        "message": "Operação destrutiva detectada.",
+        "severity": "HIGH",
+        "points": 30,
+    },
+    "execute": {
+        "message": "Capacidade de execução detectada.",
+        "severity": "HIGH",
+        "points": 30,
+    },
+    "shell": {
+        "message": "Acesso ao shell detectado.",
+        "severity": "CRITICAL",
+        "points": 40,
+    },
+    "admin": {
+        "message": "Capacidade administrativa detectada.",
+        "severity": "HIGH",
+        "points": 25,
+    },
+    "password": {
+        "message": "Possível manipulação de credenciais detectada.",
+        "severity": "HIGH",
+        "points": 25,
+    },
+    "token": {
+        "message": "Possível manipulação de tokens detectada.",
+        "severity": "HIGH",
+        "points": 25,
+    },
+    "secret": {
+        "message": "Possível manipulação de segredos detectada.",
+        "severity": "HIGH",
+        "points": 25,
+    },
+    "payment": {
+        "message": "Operação financeira detectada.",
+        "severity": "HIGH",
+        "points": 25,
+    },
 }
 
 
-def scan_text(text: str) -> list[str]:
-    """
-    Analisa um texto e retorna os riscos encontrados.
-    """
-
+def scan_text(text: str) -> list[dict]:
     text = text.lower()
 
     findings = []
 
-    for keyword, message in DANGEROUS_KEYWORDS.items():
+    for keyword, rule in DANGEROUS_KEYWORDS.items():
         if keyword in text:
-            findings.append(message)
+            findings.append(
+                {
+                    "keyword": keyword,
+                    "message": rule["message"],
+                    "severity": rule["severity"],
+                    "points": rule["points"],
+                }
+            )
 
     return findings
