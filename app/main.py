@@ -7,6 +7,7 @@ from app.finding_manager import deduplicate_findings
 from app.risk_correlator import correlate_findings
 from app.policy import SecurityPolicy
 from app.policy_engine import evaluate_policy
+from app.services.ai_analyzer import analyze_tool_with_ai
 
 
 app = FastAPI(
@@ -59,10 +60,21 @@ def scan(tool: ToolDefinition):
         DEFAULT_POLICY
     )
 
+    ai_analysis = analyze_tool_with_ai(
+    name=tool.name,
+    description=tool.description,
+    permissions=tool.permissions,
+    findings=[
+        finding.model_dump()
+        for finding in findings
+    ],
+)
+
     return {
-        "tool": tool,
-        "findings": findings,
-        "score": score,
-        "risk_level": risk_level,
-        "policy": policy_result,
-    }
+    "tool": tool,
+    "findings": findings,
+    "score": score,
+    "risk_level": risk_level,
+    "policy": policy_result,
+    "ai_analysis": ai_analysis,
+}

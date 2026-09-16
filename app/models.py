@@ -25,9 +25,18 @@ class PolicyResult(BaseModel):
     reasons: list[str]
 
 
+class AIAnalysis(BaseModel):
+    summary: str
+    risk_assessment: str
+    confidence: float
+    concerns: list[str]
+    recommendations: list[str]
+
+
 class ScanResult(BaseModel):
     tool: ToolDefinition
     findings: list[Finding]
     score: int
     risk_level: str
     policy: PolicyResult
+    ai_analysis: AIAnalysis | None = None
