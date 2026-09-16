@@ -85,10 +85,18 @@ def analyze_tool_with_ai(
     description: str,
     permissions: list[str],
     findings: list[dict],
-    use_mock: bool = True,
 ) -> AIAnalysis:
 
-    if use_mock:
+    provider = os.getenv("AI_PROVIDER", "mock").lower()
+
+    if provider not in {"mock", "openai"}:
+        raise ValueError(
+        f"AI_PROVIDER inválido: '{provider}'. "
+        "Use 'mock' ou 'openai'."
+    )
+
+    if provider == "mock":
+        
         return analyze_tool_with_mock(
             name=name,
             description=description,

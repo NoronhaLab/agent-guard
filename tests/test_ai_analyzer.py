@@ -1,3 +1,5 @@
+import pytest
+
 from app.services.ai_analyzer import analyze_tool_with_ai
 
 
@@ -34,3 +36,28 @@ def test_ai_analyzer_returns_low_risk_when_no_findings():
     assert result.confidence == 1.0
     assert result.concerns == []
     assert result.recommendations == []
+
+def test_ai_analyzer_defaults_to_mock_when_provider_is_missing(monkeypatch):
+    monkeypatch.delenv("AI_PROVIDER", raising=False)
+
+    result = analyze_tool_with_ai(
+        name="get_weather",
+        description="Get current weather information",
+        permissions=[],
+        findings=[],
+    )
+
+    assert result.risk_assessment == "LOW"
+    assert result.confidence == 1.0
+    assert result.summary == "Mock security analysis for tool 'get_weather'."
+
+def test_ai_analyzer_rejects_invalid_provider(monkeypatch):
+    monkeypatch.setenv("AI_PROVIDER", "invalid")
+
+    with pytest.raises(ValueError, match="AI_PROVIDER inválido"):
+        analyze_tool_with_ai(
+            name="get_weather",
+            description="Get current weather information",
+            permissions=[],
+            findings=[],
+        )    
