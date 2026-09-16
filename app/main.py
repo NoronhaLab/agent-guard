@@ -5,11 +5,25 @@ from app.risk_engine import calculate_risk_level, calculate_score
 from app.scanners.tool_scanner import scan_tool
 from app.finding_manager import deduplicate_findings
 from app.risk_correlator import correlate_findings
+from app.policy import SecurityPolicy
+from app.policy_engine import evaluate_policy
+
 
 app = FastAPI(
     title="Agent Guard",
     description="Security scanner for AI agents and tools.",
     version="0.2.0"
+)
+
+
+DEFAULT_POLICY = SecurityPolicy(
+    name="default",
+    block_critical=True,
+    require_human_approval_for=[
+        "database_delete",
+        "shell",
+    ],
+    blocked_permissions=[]
 )
 
 
@@ -25,7 +39,9 @@ def health_check():
 @app.post("/scan", response_model=ScanResult)
 def scan(tool: ToolDefinition):
     findings = scan_tool(tool)
+
     findings = deduplicate_findings(findings)
+
     findings = correlate_findings(findings)
 
     score = calculate_score(
@@ -33,13 +49,20 @@ def scan(tool: ToolDefinition):
     )
 
     risk_level = calculate_risk_level(
-    score,
-    [finding.model_dump() for finding in findings]
-)
-
-    return ScanResult(
-        tool=tool,
-        findings=findings,
-        score=score,
-        risk_level=risk_level
+        score,
+        [finding.model_dump() for finding in findings]
     )
+
+    policy_result = evaluate_policy(
+        findings,
+        tool.permissions,
+        DEFAULT_POLICY
+    )
+
+    return {
+        "tool": tool,
+        "findings": findings,
+        "score": score,
+        "risk_level": risk_level,
+        "policy": policy_result,
+    }

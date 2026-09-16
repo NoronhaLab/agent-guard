@@ -14,7 +14,15 @@ class Finding(BaseModel):
     description: str
     recommendation: str
     severity: str
-    points: int 
+    points: int
+
+
+class PolicyResult(BaseModel):
+    policy: str
+    blocked: bool
+    approval_required: list[str]
+    blocked_permissions: list[str]
+    reasons: list[str]
 
 
 class ScanResult(BaseModel):
@@ -22,3 +30,4 @@ class ScanResult(BaseModel):
     findings: list[Finding]
     score: int
     risk_level: str
+    policy: PolicyResult
