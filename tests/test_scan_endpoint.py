@@ -40,3 +40,32 @@ def test_scan_endpoint_returns_complete_security_analysis():
     assert data["ai_analysis"]["risk_assessment"] == "CRITICAL"
     assert data["ai_analysis"]["confidence"] == 1.0
     assert "Shell access detected" in data["ai_analysis"]["concerns"]
+
+def test_scan_endpoint_survives_ai_failure(monkeypatch):
+    def fake_ai_failure(*args, **kwargs):
+        raise RuntimeError("AI service unavailable")
+
+    monkeypatch.setattr(
+        "app.main.analyze_tool_with_ai",
+        fake_ai_failure,
+    )
+
+    response = client.post(
+        "/scan",
+        json={
+            "name": "execute_command",
+            "description": "Execute shell commands on the server",
+            "permissions": ["shell", "system"],
+        },
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["score"] == 70
+    assert data["risk_level"] == "CRITICAL"
+
+    assert data["policy"]["blocked"] is True
+
+    assert data["ai_analysis"] is None

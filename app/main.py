@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import FastAPI
 
 from app.models import ToolDefinition, ScanResult
@@ -8,6 +10,8 @@ from app.risk_correlator import correlate_findings
 from app.policy import SecurityPolicy
 from app.policy_engine import evaluate_policy
 from app.services.ai_analyzer import analyze_tool_with_ai
+
+logger = logging.getLogger(__name__)
 
 
 app = FastAPI(
@@ -60,21 +64,27 @@ def scan(tool: ToolDefinition):
         DEFAULT_POLICY
     )
 
-    ai_analysis = analyze_tool_with_ai(
-    name=tool.name,
-    description=tool.description,
-    permissions=tool.permissions,
-    findings=[
-        finding.model_dump()
-        for finding in findings
-    ],
-)
+    try:
+        ai_analysis = analyze_tool_with_ai(
+            name=tool.name,
+            description=tool.description,
+            permissions=tool.permissions,
+            findings=[
+                finding.model_dump()
+                for finding in findings
+            ],
+        )
+    except Exception:
+        logger.exception(
+            "AI analysis failed. Continuing with deterministic analysis."
+        )
+        ai_analysis = None
 
     return {
-    "tool": tool,
-    "findings": findings,
-    "score": score,
-    "risk_level": risk_level,
-    "policy": policy_result,
-    "ai_analysis": ai_analysis,
-}
+        "tool": tool,
+        "findings": findings,
+        "score": score,
+        "risk_level": risk_level,
+        "policy": policy_result,
+        "ai_analysis": ai_analysis,
+    }
