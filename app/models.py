@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from typing import Literal
 
 
 class ToolDefinition(BaseModel):
@@ -25,7 +26,7 @@ class PolicyResult(BaseModel):
     reasons: list[str]
 
 class DecisionResult(BaseModel):
-    action: str
+    action: Literal["ALLOW", "REQUIRE_APPROVAL", "BLOCK"]
     reason: str
 
 class AIAnalysis(BaseModel):

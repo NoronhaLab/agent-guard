@@ -1,3 +1,6 @@
+import pytest
+from pydantic import ValidationError
+
 from app.decision_engine import make_decision
 from app.models import PolicyResult
 
@@ -42,3 +45,12 @@ def test_decision_allows_safe_tool():
     decision = make_decision(policy)
 
     assert decision.action == "ALLOW"
+
+def test_decision_rejects_invalid_action():
+    from app.models import DecisionResult
+
+    with pytest.raises(ValidationError):
+        DecisionResult(
+            action="INVALID_ACTION",
+            reason="This action should not be accepted.",
+        )    
