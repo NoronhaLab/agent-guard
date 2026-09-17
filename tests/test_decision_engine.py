@@ -17,6 +17,7 @@ def test_decision_blocks_when_policy_blocks():
     decision = make_decision(policy)
 
     assert decision.action == "BLOCK"
+    assert decision.reason == "Critical security findings detected."
 
 
 def test_decision_requires_approval_when_needed():

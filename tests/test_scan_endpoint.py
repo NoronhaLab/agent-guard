@@ -37,7 +37,7 @@ def test_scan_endpoint_returns_complete_security_analysis():
     assert "shell" in data["policy"]["approval_required"]
 
     assert data["decision"]["action"] == "BLOCK"
-    assert data["decision"]["reason"] == "Security policy blocked this tool."
+    assert data["decision"]["reason"] == "Critical security findings detected."
 
     assert data["ai_analysis"] is not None
     assert data["ai_analysis"]["risk_assessment"] == "CRITICAL"

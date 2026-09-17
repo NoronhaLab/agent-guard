@@ -3,9 +3,15 @@ from app.models import DecisionResult, PolicyResult
 
 def make_decision(policy: PolicyResult) -> DecisionResult:
     if policy.blocked:
+        reason = (
+            "; ".join(policy.reasons)
+            if policy.reasons
+            else "Security policy blocked this tool."
+        )
+
         return DecisionResult(
             action="BLOCK",
-            reason="Security policy blocked this tool.",
+            reason=reason,
         )
 
     if policy.approval_required:
