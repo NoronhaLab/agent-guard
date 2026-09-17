@@ -1,0 +1,44 @@
+from app.decision_engine import make_decision
+from app.models import PolicyResult
+
+
+def test_decision_blocks_when_policy_blocks():
+    policy = PolicyResult(
+        policy="default",
+        blocked=True,
+        approval_required=[],
+        blocked_permissions=[],
+        reasons=["Critical security findings detected."],
+    )
+
+    decision = make_decision(policy)
+
+    assert decision.action == "BLOCK"
+
+
+def test_decision_requires_approval_when_needed():
+    policy = PolicyResult(
+        policy="default",
+        blocked=False,
+        approval_required=["database_write"],
+        blocked_permissions=[],
+        reasons=[],
+    )
+
+    decision = make_decision(policy)
+
+    assert decision.action == "REQUIRE_APPROVAL"
+
+
+def test_decision_allows_safe_tool():
+    policy = PolicyResult(
+        policy="default",
+        blocked=False,
+        approval_required=[],
+        blocked_permissions=[],
+        reasons=[],
+    )
+
+    decision = make_decision(policy)
+
+    assert decision.action == "ALLOW"

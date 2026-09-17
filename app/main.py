@@ -2,7 +2,7 @@ import logging
 
 from fastapi import FastAPI
 
-from app.models import ToolDefinition, ScanResult
+from app.models import ToolDefinition, ScanResult, PolicyResult
 from app.risk_engine import calculate_risk_level, calculate_score
 from app.scanners.tool_scanner import scan_tool
 from app.finding_manager import deduplicate_findings
@@ -10,6 +10,7 @@ from app.risk_correlator import correlate_findings
 from app.policy import SecurityPolicy
 from app.policy_engine import evaluate_policy
 from app.services.ai_analyzer import analyze_tool_with_ai
+from app.decision_engine import make_decision
 
 logger = logging.getLogger(__name__)
 
@@ -59,10 +60,16 @@ def scan(tool: ToolDefinition):
     )
 
     policy_result = evaluate_policy(
-        findings,
-        tool.permissions,
-        DEFAULT_POLICY
-    )
+    findings,
+    tool.permissions,
+    DEFAULT_POLICY
+)
+
+    policy_result = PolicyResult(**policy_result)
+
+    decision = make_decision(
+    policy_result
+)
 
     try:
         ai_analysis = analyze_tool_with_ai(
@@ -87,4 +94,5 @@ def scan(tool: ToolDefinition):
         "risk_level": risk_level,
         "policy": policy_result,
         "ai_analysis": ai_analysis,
+        "decision": decision,
     }

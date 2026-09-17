@@ -24,6 +24,9 @@ class PolicyResult(BaseModel):
     blocked_permissions: list[str]
     reasons: list[str]
 
+class DecisionResult(BaseModel):
+    action: str
+    reason: str
 
 class AIAnalysis(BaseModel):
     summary: str
@@ -40,3 +43,4 @@ class ScanResult(BaseModel):
     risk_level: str
     policy: PolicyResult
     ai_analysis: AIAnalysis | None = None
+    decision: DecisionResult | None = None
