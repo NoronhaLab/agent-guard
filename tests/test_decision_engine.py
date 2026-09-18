@@ -47,6 +47,9 @@ def test_decision_allows_safe_tool():
     decision = make_decision(policy)
 
     assert decision.action == "ALLOW"
+    assert decision.reason == (
+    "No blocking policy or human approval requirement was triggered."
+)
 
 def test_decision_rejects_invalid_action():
     from app.models import DecisionResult
