@@ -15,10 +15,12 @@ def make_decision(policy: PolicyResult) -> DecisionResult:
         )
 
     if policy.approval_required:
+        permissions = ", ".join(policy.approval_required)
+
         return DecisionResult(
-            action="REQUIRE_APPROVAL",
-            reason="Human approval is required before this tool can be used.",
-        )
+          action="REQUIRE_APPROVAL",
+          reason=f"Human approval required for permissions: {permissions}.",
+       )
 
     return DecisionResult(
         action="ALLOW",

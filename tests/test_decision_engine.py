@@ -32,6 +32,7 @@ def test_decision_requires_approval_when_needed():
     decision = make_decision(policy)
 
     assert decision.action == "REQUIRE_APPROVAL"
+    assert decision.reason == "Human approval required for permissions: database_write."
 
 
 def test_decision_allows_safe_tool():
