@@ -17,13 +17,25 @@ def make_decision(
             reason=reason,
         )
 
+    if risk_level == "CRITICAL":
+        return DecisionResult(
+            action="BLOCK",
+            reason="Critical-risk tool cannot be automatically allowed.",
+        )
+
     if policy.approval_required:
         permissions = ", ".join(policy.approval_required)
 
         return DecisionResult(
-          action="REQUIRE_APPROVAL",
-          reason=f"Human approval required for permissions: {permissions}.",
-       )
+            action="REQUIRE_APPROVAL",
+            reason=f"Human approval required for permissions: {permissions}.",
+        )
+
+    if risk_level == "HIGH":
+        return DecisionResult(
+            action="REQUIRE_APPROVAL",
+            reason="High-risk tool requires human approval.",
+        )
 
     return DecisionResult(
         action="ALLOW",

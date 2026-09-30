@@ -89,4 +89,55 @@ def test_decision_accepts_risk_level():
         risk_level="LOW",
     )
 
-    assert decision.action == "ALLOW"            
+    assert decision.action == "ALLOW" 
+
+def test_high_risk_requires_approval_when_policy_allows():
+    policy = PolicyResult(
+        policy="default",
+        blocked=False,
+        approval_required=[],
+        blocked_permissions=[],
+        reasons=[],
+    )
+
+    decision = make_decision(
+        policy,
+        risk_level="HIGH",
+    )
+
+    assert decision.action == "REQUIRE_APPROVAL"
+    assert decision.reason == "High-risk tool requires human approval."
+
+def test_critical_risk_blocks_when_policy_allows():
+    policy = PolicyResult(
+        policy="default",
+        blocked=False,
+        approval_required=[],
+        blocked_permissions=[],
+        reasons=[],
+    )
+
+    decision = make_decision(
+        policy,
+        risk_level="CRITICAL",
+    )
+
+    assert decision.action == "BLOCK"
+    assert decision.reason == "Critical-risk tool cannot be automatically allowed."
+
+def test_critical_risk_has_priority_over_approval():
+    policy = PolicyResult(
+        policy="default",
+        blocked=False,
+        approval_required=["database_write"],
+        blocked_permissions=[],
+        reasons=[],
+    )
+
+    decision = make_decision(
+        policy,
+        risk_level="CRITICAL",
+    )
+
+    assert decision.action == "BLOCK"
+    assert decision.reason == "Critical-risk tool cannot be automatically allowed."           
