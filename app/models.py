@@ -1,6 +1,8 @@
 from pydantic import BaseModel, Field
 from typing import Literal
 
+RiskLevel = Literal["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+
 
 class ToolDefinition(BaseModel):
     name: str
@@ -41,7 +43,7 @@ class ScanResult(BaseModel):
     tool: ToolDefinition
     findings: list[Finding]
     score: int
-    risk_level: str
+    risk_level: RiskLevel
     policy: PolicyResult
     ai_analysis: AIAnalysis | None = None
     decision: DecisionResult | None = None

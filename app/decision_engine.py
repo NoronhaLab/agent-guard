@@ -1,9 +1,9 @@
-from app.models import DecisionResult, PolicyResult
+from app.models import DecisionResult, PolicyResult, RiskLevel
 
 
 def make_decision(
     policy: PolicyResult,
-    risk_level: str | None = None,
+    risk_level: RiskLevel | None = None,
 ) -> DecisionResult:
     if policy.blocked:
         reason = (

@@ -1,3 +1,8 @@
+import pytest
+from pydantic import ValidationError
+
+from app.models import ScanResult
+
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -72,3 +77,28 @@ def test_scan_endpoint_survives_ai_failure(monkeypatch):
     assert data["policy"]["blocked"] is True
 
     assert data["ai_analysis"] is None
+
+def test_scan_result_rejects_invalid_risk_level():
+    with pytest.raises(ValidationError):
+        ScanResult(
+            tool={
+                "name": "safe_tool",
+                "description": "Safe test tool",
+                "permissions": [],
+            },
+            findings=[],
+            score=0,
+            risk_level="INVALID",
+            policy={
+                "policy": "default",
+                "blocked": False,
+                "approval_required": [],
+                "blocked_permissions": [],
+                "reasons": [],
+            },
+            ai_analysis=None,
+            decision={
+                "action": "ALLOW",
+                "reason": "No blocking policy or human approval requirement was triggered.",
+            },
+        )
