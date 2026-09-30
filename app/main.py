@@ -68,7 +68,8 @@ def scan(tool: ToolDefinition):
     policy_result = PolicyResult(**policy_result)
 
     decision = make_decision(
-    policy_result
+    policy_result,
+    risk_level=risk_level,
 )
 
     try:

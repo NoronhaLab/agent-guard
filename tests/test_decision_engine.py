@@ -72,4 +72,21 @@ def test_block_has_priority_over_human_approval():
     decision = make_decision(policy)
 
     assert decision.action == "BLOCK"
-    assert decision.reason == "Critical security findings detected."            
+    assert decision.reason == "Critical security findings detected."
+
+
+def test_decision_accepts_risk_level():
+    policy = PolicyResult(
+        policy="default",
+        blocked=False,
+        approval_required=[],
+        blocked_permissions=[],
+        reasons=[],
+    )
+
+    decision = make_decision(
+        policy,
+        risk_level="LOW",
+    )
+
+    assert decision.action == "ALLOW"            

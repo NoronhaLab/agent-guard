@@ -1,7 +1,10 @@
 from app.models import DecisionResult, PolicyResult
 
 
-def make_decision(policy: PolicyResult) -> DecisionResult:
+def make_decision(
+    policy: PolicyResult,
+    risk_level: str | None = None,
+) -> DecisionResult:
     if policy.blocked:
         reason = (
             "; ".join(policy.reasons)
