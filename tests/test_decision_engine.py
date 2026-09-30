@@ -58,4 +58,18 @@ def test_decision_rejects_invalid_action():
         DecisionResult(
             action="INVALID_ACTION",
             reason="This action should not be accepted.",
-        )    
+        )
+
+def test_block_has_priority_over_human_approval():
+    policy = PolicyResult(
+        policy="default",
+        blocked=True,
+        approval_required=["shell"],
+        blocked_permissions=[],
+        reasons=["Critical security findings detected."],
+    )
+
+    decision = make_decision(policy)
+
+    assert decision.action == "BLOCK"
+    assert decision.reason == "Critical security findings detected."            
