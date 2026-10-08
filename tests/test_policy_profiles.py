@@ -9,6 +9,11 @@ def test_default_policy_profile():
     assert policy.name == "default"
     assert policy.block_risk_levels == ["CRITICAL"]
     assert policy.require_approval_risk_levels == ["HIGH"]
+    assert policy.block_critical is True
+    assert policy.require_human_approval_for == [
+        "database_delete",
+        "shell",
+    ]
 
 
 def test_strict_policy_profile():

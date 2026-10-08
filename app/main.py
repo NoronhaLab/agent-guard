@@ -11,6 +11,8 @@ from app.policy import SecurityPolicy
 from app.policy_engine import evaluate_policy
 from app.services.ai_analyzer import analyze_tool_with_ai
 from app.decision_engine import make_decision
+from app.policy_profiles import get_security_policy
+
 
 logger = logging.getLogger(__name__)
 
@@ -22,15 +24,8 @@ app = FastAPI(
 )
 
 
-DEFAULT_POLICY = SecurityPolicy(
-    name="default",
-    block_critical=True,
-    require_human_approval_for=[
-        "database_delete",
-        "shell",
-    ],
-    blocked_permissions=[]
-)
+DEFAULT_POLICY = get_security_policy("default")
+
 
 
 @app.get("/")

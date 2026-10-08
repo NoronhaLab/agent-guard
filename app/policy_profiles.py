@@ -5,9 +5,15 @@ def get_security_policy(profile: str) -> SecurityPolicy:
     if profile == "default":
         return SecurityPolicy(
             name="default",
+            block_critical=True,
             block_risk_levels=["CRITICAL"],
             require_approval_risk_levels=["HIGH"],
-        )
+            require_human_approval_for=[
+              "database_delete",
+              "shell",
+            ],
+            blocked_permissions=[],
+    )
 
     if profile == "strict":
         return SecurityPolicy(
