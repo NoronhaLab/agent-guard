@@ -1,9 +1,11 @@
 from app.models import DecisionResult, PolicyResult, RiskLevel
+from app.policy import SecurityPolicy   
 
 
 def make_decision(
     policy: PolicyResult,
     risk_level: RiskLevel | None = None,
+    security_policy: SecurityPolicy | None = None,
 ) -> DecisionResult:
     if policy.blocked:
         reason = (
@@ -17,11 +19,37 @@ def make_decision(
             reason=reason,
         )
 
-    if risk_level == "CRITICAL":
+    if (
+       security_policy is not None
+       and risk_level is not None
+       and risk_level in security_policy.block_risk_levels
+):
         return DecisionResult(
-            action="BLOCK",
-            reason="Critical-risk tool cannot be automatically allowed.",
-        )
+          action="BLOCK",
+          reason=(
+            f"Risk level {risk_level} is blocked by "
+            f"security policy '{security_policy.name}'."
+          ),
+      )
+
+    if (
+       security_policy is not None
+       and risk_level is not None
+       and risk_level in security_policy.require_approval_risk_levels
+):
+        return DecisionResult(
+          action="REQUIRE_APPROVAL",
+          reason=(
+            f"Risk level {risk_level} requires human approval "
+            f"under security policy '{security_policy.name}'."
+        ),
+    )
+
+    if security_policy is None and risk_level == "CRITICAL":
+        return DecisionResult(
+          action="BLOCK",
+          reason="Critical-risk tool cannot be automatically allowed.",
+    )
 
     if policy.approval_required:
         permissions = ", ".join(policy.approval_required)
@@ -31,7 +59,7 @@ def make_decision(
             reason=f"Human approval required for permissions: {permissions}.",
         )
 
-    if risk_level == "HIGH":
+    if security_policy is None and risk_level == "HIGH":
         return DecisionResult(
             action="REQUIRE_APPROVAL",
             reason="High-risk tool requires human approval.",

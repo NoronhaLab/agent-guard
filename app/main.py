@@ -68,9 +68,10 @@ def scan(tool: ToolDefinition):
     policy_result = PolicyResult(**policy_result)
 
     decision = make_decision(
-    policy_result,
-    risk_level=risk_level,
-)
+      policy_result,
+      risk_level=risk_level,
+      security_policy=DEFAULT_POLICY,
+    )
 
     try:
         ai_analysis = analyze_tool_with_ai(
